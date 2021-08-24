@@ -2,13 +2,16 @@ module Main exposing (..)
 
 import Browser
 import Html
+import Browser.Navigation exposing (Key)
 
 
-init flags url key = ( {}, Cmd.none)
+init flags url key = ( {key = key}, Cmd.none)
 
 type Msg = TODO
 
-type alias Model = {}
+type alias Model =
+    {key : Key
+    }
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model = ( model, Cmd.none)
 
