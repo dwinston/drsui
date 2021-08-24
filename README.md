@@ -10,7 +10,9 @@ Development is currently being done in VSCode using the [Elm tooling](https://ma
 
 ### setup
 
+Install `direnv`, e.g. `brew install direnv` on MacOS.
+
 ```bash
 npm install
-./node_modules/.bin/elm-live src/Main.elm
+elm-live src/Main.elm
 ```
