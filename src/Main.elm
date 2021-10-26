@@ -6,9 +6,12 @@ import Html exposing (Html)
 import Html.Attributes as Attrs
 import Html.Events as Events
 import Http
+import Json.Decode as Decode
+import Json.Encode as Encode
 import Jwt exposing (Jwt)
 import Route exposing (Route)
 import Url exposing (Url)
+import Url.Builder as Builder
 
 
 init : () -> Url -> Key -> ( Model, Cmd Msg )
@@ -29,6 +32,7 @@ type Msg
     | UserWantsToLogin
     | UserTypedInClientIdField String
     | UserTypedInClientSecretField String
+    | GotLoginResponse (Result Http.Error Jwt)
 
 
 type alias Model =
@@ -53,15 +57,33 @@ update msg model =
             ( { model | route = Route.parse url }, Cmd.none )
 
         UserWantsToLogin ->
-            -- grant_type = "client_credentials", client_id = '', client_secret = ''
-            -- ( model, Http.post { url = "https://api.dev.microbiomedata.org/token" } )
-            Debug.todo "user wants to log in"
+            ( model
+            , Http.post
+                { url = "/api/token"
+                , expect = Http.expectJson GotLoginResponse Jwt.decoder
+                , body =
+                    Builder.toQuery
+                        [ Builder.string "grant_type" "client_credentials"
+                        , Builder.string "client_id" model.draftClientId
+                        , Builder.string "client_secret" model.draftClientSecret
+                        ]
+                        |> String.dropLeft 1
+                        |> Http.stringBody "application/x-www-form-urlencoded"
+                }
+            )
 
+        -- Debug.todo "user wants to log in"
         UserTypedInClientIdField newDraftClientId ->
             ( { model | draftClientId = newDraftClientId }, Cmd.none )
 
         UserTypedInClientSecretField newDraftClientSecret ->
             ( { model | draftClientSecret = newDraftClientSecret }, Cmd.none )
+
+        GotLoginResponse (Err e) ->
+            ( model, Debug.todo (Debug.toString e) )
+
+        GotLoginResponse (Ok jwt) ->
+            ( { model | jwt = Just jwt, draftClientId = "", draftClientSecret = "" }, Cmd.none )
 
 
 view : Model -> Browser.Document Msg
@@ -80,7 +102,8 @@ view model =
                         [ Html.text "TODO" ]
             ]
         , Html.main_ [] [ viewPageContent model ]
-        , Html.text <| Debug.toString model
+
+        -- , Html.text <| Debug.toString model
         , Html.footer [] [ Html.text "Footer" ]
         ]
     }
@@ -114,6 +137,15 @@ viewPageContent model =
 
         Route.NotFound ->
             Html.text "NotFound"
+
+
+
+-- options now:
+--   save jwt to localStorage
+--   on successful login, redirect to home page
+--   track token expiration to not make a request with a bad token
+--   can protect urls with redirect-to-login and route back to requested page
+--         this can work for expired jwt tokens as well
 
 
 main : Program () Model Msg

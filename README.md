@@ -14,5 +14,6 @@ Install `direnv`, e.g. `brew install direnv` on MacOS.
 
 ```bash
 npm install
-elm-live --pushstate true src/Main.elm
+node esbuild.js
+python -m http.server
 ```

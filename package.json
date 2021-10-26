@@ -13,5 +13,9 @@
     "elm-format": "^0.8.5",
     "elm-live": "^4.0.2",
     "elm-test": "^0.19.1-revision7"
+  },
+  "dependencies": {
+    "esbuild": "^0.13.9",
+    "esbuild-plugin-elm": "^0.0.5"
   }
 }
