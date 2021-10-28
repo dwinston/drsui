@@ -10,10 +10,11 @@ Development is currently being done in VSCode using the [Elm tooling](https://ma
 
 ### setup
 
-Install `direnv`, e.g. `brew install direnv` on MacOS.
+Install [modd](https://github.com/cortesi/modd) and [devd](https://github.com/cortesi/devd).
 
 ```bash
 npm install
-node esbuild.js
-python -m http.server
+modd
 ```
+
+This will open a dev server on port 9000 and assume you have an API server running on port 8000.
