@@ -1,4 +1,4 @@
-module Route exposing (Route(..), parse)
+module Route exposing (Route(..), parse, toString)
 
 import Url exposing (Url)
 import Url.Parser as Parser exposing ((</>), Parser)
@@ -12,6 +12,16 @@ type Route
 parse : Url -> Route
 parse url =
     Parser.parse parser url |> Maybe.withDefault NotFound
+
+
+toString : Route -> String
+toString route =
+    case route of
+        Login ->
+            "/login"
+
+        NotFound ->
+            "/notfound"
 
 
 parser : Parser (Route -> a) a

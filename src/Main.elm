@@ -7,7 +7,6 @@ import Html.Attributes as Attrs
 import Html.Events as Events
 import Http
 import Json.Decode as Decode
-import Json.Encode as Encode
 import Jwt exposing (Jwt)
 import Route exposing (Route)
 import Url exposing (Url)
@@ -44,6 +43,7 @@ type Msg
     | UserTypedInClientIdField String
     | UserTypedInClientSecretField String
     | GotLoginResponse (Result Http.Error Jwt)
+    | UserWantsToLogout
 
 
 type alias Model =
@@ -96,6 +96,9 @@ update msg model =
         GotLoginResponse (Ok jwt) ->
             ( { model | jwt = Just jwt, draftClientId = "", draftClientSecret = "" }, Jwt.save jwt )
 
+        UserWantsToLogout ->
+            ( { model | jwt = Nothing }, Cmd.batch [ Jwt.clear, Navigation.pushUrl model.key (Route.toString Route.Login) ] )
+
 
 view : Model -> Browser.Document Msg
 view model =
@@ -110,7 +113,9 @@ view model =
 
                 Just _ ->
                     Html.nav []
-                        [ Html.text "TODO" ]
+                        [ Html.text "TODO"
+                        , Html.button [ Events.onClick UserWantsToLogout ] [ Html.text "Sign Out" ]
+                        ]
             ]
         , Html.main_ [] [ viewPageContent model ]
 

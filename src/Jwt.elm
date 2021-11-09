@@ -1,4 +1,4 @@
-port module Jwt exposing (Jwt, decoder, fromString, save)
+port module Jwt exposing (Jwt, clear, decoder, fromString, save)
 
 import Json.Decode as Decode exposing (Decoder)
 
@@ -10,9 +10,17 @@ type Jwt
 port saveJwt : String -> Cmd msg
 
 
+port clearJwt : () -> Cmd msg
+
+
 save : Jwt -> Cmd msg
 save (Jwt s) =
     saveJwt s
+
+
+clear : Cmd msg
+clear =
+    clearJwt ()
 
 
 fromString : String -> Jwt
