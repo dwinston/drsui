@@ -1,3 +1,6 @@
 import  { Elm } from "./Main.elm"
 
-Elm.Main.init()
+let app = Elm.Main.init();
+app.ports.saveJwt.subscribe((jwt) => {
+    localStorage.setItem("jwt", jwt);
+})

@@ -83,7 +83,7 @@ update msg model =
             ( model, Debug.todo (Debug.toString e) )
 
         GotLoginResponse (Ok jwt) ->
-            ( { model | jwt = Just jwt, draftClientId = "", draftClientSecret = "" }, Cmd.none )
+            ( { model | jwt = Just jwt, draftClientId = "", draftClientSecret = "" }, Jwt.save jwt )
 
 
 view : Model -> Browser.Document Msg
