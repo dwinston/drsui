@@ -94,7 +94,7 @@ update msg model =
             ( model, Debug.todo (Debug.toString e) )
 
         GotLoginResponse (Ok jwt) ->
-            ( { model | jwt = Just jwt, draftClientId = "", draftClientSecret = "" }, Jwt.save jwt )
+            ( { model | jwt = Just jwt, draftClientId = "", draftClientSecret = "" }, Cmd.batch [ Jwt.save jwt, Navigation.pushUrl model.key (Route.toString Route.Home) ] )
 
         UserWantsToLogout ->
             ( { model | jwt = Nothing }, Cmd.batch [ Jwt.clear, Navigation.pushUrl model.key (Route.toString Route.Login) ] )
@@ -153,6 +153,9 @@ viewPageContent model =
 
         Route.NotFound ->
             Html.text "NotFound"
+
+        Route.Home ->
+            Html.text "Welcome home!"
 
 
 

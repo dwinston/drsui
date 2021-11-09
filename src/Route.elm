@@ -7,6 +7,7 @@ import Url.Parser as Parser exposing ((</>), Parser)
 type Route
     = Login
     | NotFound
+    | Home
 
 
 parse : Url -> Route
@@ -23,11 +24,15 @@ toString route =
         NotFound ->
             "/notfound"
 
+        Home ->
+            "/"
+
 
 parser : Parser (Route -> a) a
 parser =
     Parser.oneOf
         [ Parser.map Login (Parser.top </> Parser.s "login")
+        , Parser.map Home Parser.top
         ]
 
 
