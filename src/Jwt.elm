@@ -22,4 +22,4 @@ fromString =
 
 decoder : Decoder Jwt
 decoder =
-    Decode.field "access_token" (Decode.map fromString Decode.string)
+    Decode.map fromString Decode.string

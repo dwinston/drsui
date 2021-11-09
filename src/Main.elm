@@ -14,11 +14,22 @@ import Url exposing (Url)
 import Url.Builder as Builder
 
 
-init : () -> Url -> Key -> ( Model, Cmd Msg )
-init _ url key =
+init : Decode.Value -> Url -> Key -> ( Model, Cmd Msg )
+init flags url key =
+    let
+        jwt =
+            case
+                Decode.decodeValue (Decode.field "jwt" (Decode.nullable Jwt.decoder)) flags
+            of
+                Ok jwt_ ->
+                    jwt_
+
+                Err e ->
+                    Debug.todo (Debug.toString e)
+    in
     ( { key = key
       , route = Route.parse url
-      , jwt = Nothing
+      , jwt = jwt
       , draftClientId = ""
       , draftClientSecret = ""
       }
@@ -60,7 +71,7 @@ update msg model =
             ( model
             , Http.post
                 { url = "/api/token"
-                , expect = Http.expectJson GotLoginResponse Jwt.decoder
+                , expect = Http.expectJson GotLoginResponse (Decode.field "access_token" Jwt.decoder)
                 , body =
                     Builder.toQuery
                         [ Builder.string "grant_type" "client_credentials"
@@ -148,7 +159,7 @@ viewPageContent model =
 --         this can work for expired jwt tokens as well
 
 
-main : Program () Model Msg
+main : Program Decode.Value Model Msg
 main =
     Browser.application
         { init = init
