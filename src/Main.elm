@@ -26,14 +26,16 @@ init flags url key =
                 Err e ->
                     Debug.todo (Debug.toString e)
     in
-    ( { key = key
-      , route = Route.parse url
-      , jwt = jwt
-      , draftClientId = ""
-      , draftClientSecret = ""
-      }
-    , Cmd.none
-    )
+    update
+        (UrlChange
+            url
+        )
+        { key = key
+        , route = Route.NotFound
+        , jwt = jwt
+        , draftClientId = ""
+        , draftClientSecret = ""
+        }
 
 
 type Msg
@@ -65,7 +67,15 @@ update msg model =
             ( model, Navigation.load str )
 
         UrlChange url ->
-            ( { model | route = Route.parse url }, Cmd.none )
+            case ( Route.parse url, model.jwt ) of
+                ( Route.Home, Nothing ) ->
+                    ( model, Navigation.replaceUrl model.key (Route.toString Route.Login) )
+
+                ( Route.Login, Just _ ) ->
+                    ( model, Navigation.replaceUrl model.key (Route.toString Route.Home) )
+
+                ( route, _ ) ->
+                    ( { model | route = route }, Cmd.none )
 
         UserWantsToLogin ->
             ( model
